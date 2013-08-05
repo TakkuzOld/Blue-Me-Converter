@@ -1,4 +1,8 @@
 Blue-Me-Converter
 =================
 
-Mp3 converter for Fiat Blue&amp;Me system.
+Shell mp3 converter for Fiat Blue&amp;Me system.
+It's supposed to be used as Nautilus Scrips.
+Convert an entire folder into 128kbps mp3, with Latin1 coded tag.
+
+Needs EyeD and Lame.
