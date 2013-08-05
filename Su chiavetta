@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Allocazione delle variabili utente:
+usbFolder="/media/vittorio/MUSICA"
+script="/home/vittorio/.local/share/nautilus/scripts/Autoradio/SplitTag.py"
+diskFolder="`pwd`/$1"
+
+# Analisi degli mp3 contenuti nella cartella.
+cd "$diskFolder"
+usbFolder="$usbFolder/$1"
+mkdir -p "$usbFolder"
+
+for fileName in *.mp3
+do
+	filePath="$diskFolder/$fileName"
+
+	# Estrazione dei Tag importanti
+	artista=`python $script "$filePath" | grep Artista | sed 's/.*: //'`
+	titolo=`python $script "$filePath" | grep Titolo | sed 's/.*: //'`
+	genere=`python $script "$filePath" | grep Genere | sed 's/.*: //'`
+	traccia=`python $script "$filePath" | grep Traccia | sed 's/.*: //'`
+	album=`python $script "$filePath" | grep Album | sed 's/.*: //'`
+	anno=`python $script "$filePath" | grep Anno | sed 's/.*: //'`
+	
+	# Ricompressione dei file.
+	lame -b 128 "$filePath" ".$fileName"
+	
+	# Aggiunta dei Tag al nuovo file.
+	eyeD3 --set-encoding=latin1 --artist="$artista" --album="$album" --title="$titolo" --track="$traccia" --genre="$genere" --year="$anno" ".$fileName"
+	eyeD3 --to-v2.3 ".$fileName"
+	
+	# Spostamento sulla chiave
+	mv ".$fileName" "$usbFolder/$fileName"
+done
+
+zenity --info --text="Finita la cartella $1"
